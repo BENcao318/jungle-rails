@@ -1,8 +1,15 @@
 class OrdersController < ApplicationController
-
   def show
     @order = Order.find(params[:id])
+    items = LineItem.where(order_id: params[:id])
+    product_ids = items.map {|item| item[:product_id]}
+    @line_items = Product.where(id: product_ids).map.with_index {|product, idx| { product:product, quantity: items[idx][:quantity], item_price_cents: items[idx][:item_price_cents], total_price_cents: items[idx][:total_price_cents] } }
   end
+
+  def order_subtotal_cents
+    @line_items.map {|item| item[:total_price_cents] * item[:quantity]}.sum
+  end
+  helper_method :order_subtotal_cents
 
   def create
     charge = perform_stripe_charge
@@ -41,7 +48,6 @@ class OrdersController < ApplicationController
       total_cents: cart_subtotal_cents,
       stripe_charge_id: stripe_charge.id, # returned by stripe
     )
-
     enhanced_cart.each do |entry|
       product = entry[:product]
       quantity = entry[:quantity]
