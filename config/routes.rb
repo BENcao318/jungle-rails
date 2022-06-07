@@ -3,6 +3,15 @@ Rails.application.routes.draw do
   get 'about/index', to: "about#index", as: :about
   root to: 'products#index'
 
+  post 'user/sign_up', to: 'user#create'
+  get 'sign_in', to: 'sessions#new'
+  post 'sign_in', to: 'sessions#create'
+  delete 'logout', to: 'sessions#destroy'
+
+  resources :user, only: [:new] do
+    post :login
+  end
+
   resources :products, only: [:index, :show]
   resources :categories, only: [:index, :show]
 
