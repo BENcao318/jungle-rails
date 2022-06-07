@@ -6,8 +6,6 @@ class SessionsController < ApplicationController
     if user.present? && user.authenticate(params[:password])
       session[:user_id] = user.id
       session[:user_first_name] = user.first_name
-      puts session[:user_id]
-      puts "id------------ #{user.first_name}"
       redirect_to root_path, notice: 'Logged in successfully'
     else
       flash.now[:alert] = 'Invalid email or pasword'
